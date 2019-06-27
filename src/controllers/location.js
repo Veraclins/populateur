@@ -36,7 +36,7 @@ export default {
       });
 
       return res
-        .status(200)
+        .status(201)
         .json(response.success('location', 'created', location));
     } catch (error) {
       return next(error);
@@ -69,6 +69,11 @@ export default {
         return next(response.error.notFound('location', 'id'));
       }
       const { body } = req;
+
+      const invalidLocation = validateLocation(body);
+      if (invalidLocation) {
+        return next(response.error.badInput(invalidLocation));
+      }
       const name = body.name || location.name;
       const male = Number(body.male) || location.male;
       const female = Number(body.female) || location.female;
@@ -82,9 +87,10 @@ export default {
         },
         { where: { id }, returning: true }
       );
+      const data = updated[1][0];
       return res
         .status(200)
-        .json(response.success('location', 'updated', updated));
+        .json(response.success('location', 'updated', data));
     } catch (error) {
       return next(error);
     }
@@ -99,7 +105,7 @@ export default {
         include: [
           {
             model: Location,
-            as: 'subLocation',
+            as: 'subLocations',
             attributes: ['id', 'name', 'male', 'female', 'total'],
           },
         ],
@@ -107,14 +113,21 @@ export default {
       if (!location) {
         return next(response.error.notFound('location', 'id'));
       }
-      const { total, subLocation, female, male } = location;
+      const { id: returnedId, total, subLocations, female, male } = location;
       let overallTotal = total;
-      if (subLocation.length) {
-        subLocation.forEach(innerLocation => {
+      if (subLocations.length) {
+        subLocations.forEach(innerLocation => {
           overallTotal += innerLocation.total;
         });
       }
-      const data = { overallTotal, total, female, male, subLocation };
+      const data = {
+        id: returnedId,
+        overallTotal,
+        total,
+        female,
+        male,
+        subLocations,
+      };
       return res
         .status(200)
         .json(response.success('location', 'fetched', data));

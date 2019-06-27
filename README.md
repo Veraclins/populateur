@@ -1,14 +1,14 @@
-# sms-manager
+# populateur
 
-SMS manager is an sms management platform for sending and receiving messages between users. It has a simple API which makes sending and reading messages easy.
+Populateur is a population management API that helps you manage the population of different locations.
 
 ## Installation
 
 To run the app locally, setup a local development environment. Ensure that [`Nodejs`](https://nodejs.org/en/download/) and [`PostgreSQL`](https://www.postgresql.org/download/) are installed on your machine.
 
-- clone the app `git clone git@github.com:Veraclins/sms-manager.git`
-- move into the folder and install dependencies `cd sms-manager && yarn`
-- create the database `createdb sms-manager`
+- clone the app `git clone git@github.com:Veraclins/populateur.git`
+- move into the folder and install dependencies `cd populateur && yarn`
+- create the database `createdb populateur`
 - run migrations `yarn db:migrate`
 - run the app in dev mode (with auto-refresh using [nodemon](https://nodemon.io/)) `yarn dev`
 - Or build and run `yarn build && yarn start`
@@ -18,216 +18,144 @@ To run the app locally, setup a local development environment. Ensure that [`Nod
 
 The API has the following features/endpoints:
 
-**Create a contact.**
+**Sign up or login.**
 
-To create a contact, send a `post` request to `/contact` with `name` and `phoneNumber`. Note: `phoneNumber` must be ten digit numbers starting with `0`.
+To use the API, you need to sign up/login by sending a `post` request to `/auth` with `username` and `password`. This returns a token which should be passed in the header of subsequent requests as `x-access-token`.
+
+**Create a location.**
+
+To create a location, send a `post` request to `/locations` with `name`, `female`, `male` and `parentId`(optional). Note: `male` and `female` represents the population of male and female in the location respectively, and must be numbers. You can specify the id of the containing location if the new location is within another
 
 Response:
 
 ```JSON
 {
     "status": "success",
-    "message": "Contact created successfully",
+    "message": "Location created successfully",
     "data": {
-        "id": 6,
-        "name": "Jane",
-        "phoneNumber": "0995926464",
-        "updatedAt": "2019-06-26T21:05:47.396Z",
-        "createdAt": "2019-06-26T21:05:47.396Z"
+        "id": 5,
+        "name": "Abuja",
+        "male": 6008778,
+        "female": 3266454,
+        "total": 9275232,
+        "parentId": null,
+        "updatedAt": "2019-06-27T14:26:45.184Z",
+        "createdAt": "2019-06-27T14:26:45.184Z"
     }
 }
 ```
 
-**Fetch all contacts.**
+**Fetch all locations.**
 
-To fetch all the available contacts, send a `get` request to `/contacts`,
+To fetch all the available locations, send a `get` request to `/locations`,
 
 Response:
 
 ```JSON
 {
     "status": "success",
-    "message": "Contacts fetched successfully",
+    "message": "Locations fetched successfully",
     "data": [
         {
-            "id": 3,
-            "name": "Sunday",
-            "phoneNumber": "0898946464",
-            "createdAt": "2019-06-26T20:43:05.108Z",
-            "updatedAt": "2019-06-26T20:43:05.108Z"
+            "id": 1,
+            "name": "Madrid",
+            "male": 3454353456,
+            "female": 5466454679,
+            "total": 8920808135
         },
         {
             "id": 4,
-            "name": "Moses",
-            "phoneNumber": "0898926464",
-            "createdAt": "2019-06-26T20:43:16.756Z",
-            "updatedAt": "2019-06-26T20:43:16.756Z"
+            "name": "Barcelona",
+            "male": 5000059950,
+            "female": 2466454679,
+            "total": 7466514629
+        },
+        {
+            "id": 2,
+            "name": "Updated place",
+            "male": 2088787665,
+            "female": 2466454679,
+            "total": 4555242344
+        },
+        {
+            "id": 3,
+            "name": "Updated Spain",
+            "male": 6008778787,
+            "female": 3266454679,
+            "total": 9275233466
         },
         {
             "id": 5,
-            "name": "Jane",
-            "phoneNumber": "0998926464",
-            "createdAt": "2019-06-26T20:43:27.879Z",
-            "updatedAt": "2019-06-26T20:43:27.879Z"
+            "name": "Abuja",
+            "male": 6008778,
+            "female": 3266454,
+            "total": 9275232
         }
     ]
 }
 ```
 
-**Fetch contact by name.**
+**Get a location by id.**
 
-You can fetch all the contact with the same name by supplying a name query string. E.g. `/contacts?name=Jane`
-
-Response:
+You can get a location by passing the id as a parameter `/locations/2`. This also returns all locations within this location as shown below.
 
 ```JSON
 {
     "status": "success",
-    "message": "Contacts fetched successfully",
-    "data": [
-        {
-            "id": 5,
-            "name": "Jane",
-            "phoneNumber": "0998926464",
-            "createdAt": "2019-06-26T20:43:27.879Z",
-            "updatedAt": "2019-06-26T20:43:27.879Z"
-        },
-        {
-            "id": 6,
-            "name": "Jane",
-            "phoneNumber": "0995926464",
-            "createdAt": "2019-06-26T21:05:47.396Z",
-            "updatedAt": "2019-06-26T21:05:47.396Z"
-        },
-        {
-            "id": 7,
-            "name": "Jane",
-            "phoneNumber": "0805928464",
-            "createdAt": "2019-06-26T21:11:14.634Z",
-            "updatedAt": "2019-06-26T21:11:14.634Z"
-        }
-    ]
-}
-```
-
-**Get a contact by phone number.**
-
-You can get a contact by passing the phone number as a parameter `/contacts/0998926464`. This also returns all the sent and received messages as shown below.
-
-```JSON
-{
-    "status": "success",
-    "message": "Contact fetched successfully",
+    "message": "Location fetched successfully",
     "data": {
-        "id": 5,
-        "name": "Jane",
-        "phoneNumber": "0998926464",
-        "createdAt": "2019-06-26T20:43:27.879Z",
-        "updatedAt": "2019-06-26T20:43:27.879Z",
-        "sent": [],
-        "received": [
+        "overallTotal": 21296990439,
+        "total": 4555242344,
+        "female": 2466454679,
+        "male": 2088787665,
+        "subLocations": [
             {
-                "id": 9,
-                "senderId": 3,
-                "message": "Hello!"
+                "id": 4,
+                "name": "Barcelona",
+                "male": 5000059950,
+                "female": 2466454679,
+                "total": 7466514629
             },
             {
-                "id": 8,
-                "senderId": 4,
-                "message": "What I think?"
+                "id": 3,
+                "name": "Updated Spain",
+                "male": 6008778787,
+                "female": 3266454679,
+                "total": 9275233466
             }
         ]
     }
 }
 ```
 
-**Delete contact.**
+**Update a location.**
 
-To delete a contact just send a `delete` request passing the phone number as a parameter. It returns 1 if the delete is successful.
-
-**Send an sms.**
-
-To send an sms, make a `post` request to `/sms` with `senderId`, `receiverId` and `message`. Note: `senderId` and `receiverId` must numbers and the message cannot be more than 200 characters.
+To update a location, send a `put` request to `/locations` passing the id as a parameter, e.g. `/locations/4` with `name`, `female` and `male`. Inputs follow the same validation as in creating above.
 
 Response:
 
 ```JSON
 {
     "status": "success",
-    "message": "Message sent successfully",
-    "data": {
-        "id": 11,
-        "senderId": 4,
-        "receiverId": 3,
-        "message": "I love building awesome software!",
-        "updatedAt": "2019-06-26T21:28:38.420Z",
-        "createdAt": "2019-06-26T21:28:38.420Z",
-        "status": "unread"
-    }
-}
-```
-
-**Read an sms.**
-
-To read an sms, make a `get` request to `/sms` passing the id of the message as parameter. This will also include the name and phone number of the sender and the receiver.
-
-Response:
-
-```JSON
-{
-    "status": "success",
-    "message": "Message fetched successfully",
-    "data": {
-        "id": 8,
-        "senderId": 4,
-        "receiverId": 5,
-        "message": "What I think?",
-        "status": "read",
-        "createdAt": "2019-06-26T20:44:02.306Z",
-        "updatedAt": "2019-06-26T20:45:39.214Z",
-        "sender": {
-            "name": "Moses",
-            "phoneNumber": "0898926464"
-        },
-        "receiver": {
-            "name": "Jane",
-            "phoneNumber": "0998926464"
-        }
-    }
-}
-```
-
-**Fetch all sms's.**
-
-To fetch all available messages send a  `get` request to `/sms`.
-
-Response:
-
-```JSON
-{
-    "status": "success",
-    "message": "Messages fetched successfully",
+    "message": "Location updated successfully",
     "data": [
-        {
-            "id": 9,
-            "senderId": 3,
-            "receiverId": 5,
-            "message": "Hello!",
-            "status": "unread",
-            "createdAt": "2019-06-26T20:44:15.129Z",
-            "updatedAt": "2019-06-26T20:44:15.129Z"
-        },
-        {
-            "id": 10,
-            "senderId": 4,
-            "receiverId": 3,
-            "message": "Interesting!",
-            "status": "read",
-            "createdAt": "2019-06-26T20:44:28.773Z",
-            "updatedAt": "2019-06-26T20:44:28.773Z"
-        },
+        1,
+        [
+            {
+                "id": 4,
+                "name": "Onitsha",
+                "parentId": 2,
+                "male": 3009766,
+                "female": 3266454,
+                "total": 6276220,
+                "createdAt": "2019-06-27T13:36:15.241Z",
+                "updatedAt": "2019-06-27T14:40:47.664Z"
+            }
+        ]
     ]
 }
 ```
 
-You can also get all messages sent by a user or received by a user by passing the user's id as `senderId` or `receiverId` query strings.
+**Delete location.**
+
+To delete a location just send a `delete` request passing the phone number as a parameter e.g. `/locations/3`. It returns 1 if the delete is successful.

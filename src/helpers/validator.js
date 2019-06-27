@@ -24,14 +24,29 @@ export const checkForRequiredFields = (body, requiredFields) => {
 export const validateLocation = body => {
   const { name, male, female } = body;
   const errors = {};
-  if (!Number(male)) {
+  if (male && !Number(male)) {
     errors.male = ['male must be a number (the male population)'];
   }
-  if (!Number(female)) {
+  if (female && !Number(female)) {
     errors.male = ['female must be a number (the female population)'];
   }
-  if (name.length < 3) {
+  if (name && name.length < 3) {
     errors.message = ['name should be at least three (3) characters'];
+  }
+  if (Object.keys(errors).length !== 0) {
+    return errors;
+  }
+  return false;
+};
+
+export const validateUser = body => {
+  const { username, password } = body;
+  const errors = {};
+  if (username && username.length < 3) {
+    errors.message = ['username should be at least three (3) characters'];
+  }
+  if (password && password.length < 6) {
+    errors.message = ['password should be at least six (6) characters'];
   }
   if (Object.keys(errors).length !== 0) {
     return errors;

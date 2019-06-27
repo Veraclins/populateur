@@ -18,7 +18,8 @@ app.use(routes);
 app.get('/', (req, res) =>
   res.status(200).json({
     status: 'success',
-    message: 'Welcome to populateur. Where you can manage the population of different locations',
+    message:
+      'Welcome to populateur. Where you can manage the population of different locations',
   })
 );
 

@@ -29,7 +29,7 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'parentId',
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
-      as: 'subLocation',
+      as: 'subLocations',
     });
     Location.belongsTo(models.Location, {
       foreignKey: 'parentId',
