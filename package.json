@@ -1,0 +1,55 @@
+{
+  "name": "populateur",
+  "version": "1.0.0",
+  "description": "A population management API for keeping track of the population of different locations",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "prestart": "yarn db:migrate",
+    "heroku-postbuild": "npm run build",
+    "build": "babel src -D --out-dir dist --source-maps",
+    "dev": "nodemon --exec babel-node src",
+    "db:migrate": "sequelize db:migrate",
+    "db:refresh": "sequelize db:migrate:undo:all && sequelize db:migrate",
+    "pretest": "NODE_ENV=test yarn db:refresh",
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Veraclins/populateur.git"
+  },
+  "author": "Agada Clinton Innocent (Veracity)",
+  "license": "MIT",
+  "homepage": "https://github.com/Veraclins/populateur#readme",
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/runtime": "^7.4.5",
+    "bcrypt": "^3.0.6",
+    "cors": "^2.8.5",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^7.11.0",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.8.12",
+    "sequelize-cli": "^5.5.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "babel-jest": "^24.8.0",
+    "eslint": "^6.0.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^5.0.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jest": "^22.7.1",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.8.0",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2",
+    "supertest": "^4.0.2"
+  }
+}
